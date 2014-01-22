@@ -38,9 +38,9 @@ module.exports = function( grunt ) {
 
 		// This process method is used when no process function is supplied.
 
-		function defaultProcess( template, content ) {
+		function defaultProcess( template, content, suffix ) {
 			return template.replace( options.parsePattern, function( match, key ) {
-				return resolveName( key, content );
+				return resolveName( key, content, suffix );
 			} );
 		}
 
@@ -65,6 +65,11 @@ module.exports = function( grunt ) {
 		// Regex to detect array syntax.
 
 		var arrayRegex = /\[([\w\.\,\-]*)\]/;
+		
+		
+		// Regex to parse suffixes.
+
+		var suffixRegex = /suffix\{"([^"]+)"\}/g;
 
 
 		// Method to check wether file exists and warn if not.
@@ -102,12 +107,35 @@ module.exports = function( grunt ) {
 
 			return values;
 		}
+		
+		// Parses suffix string.
+
+		function parseSuffix( string ) {
+			var match;
+
+			match = suffixRegex.exec( string );
+			
+			if (match) {
+				return match[1];
+			}
+			else {
+				return "";
+			}
+		}
 
 
 		// Helper method to resolve nested placeholder names like: "home.footer.text"
 
-		function resolveName( name, values ) {
-			return mout.object.get( values, name ) || "";
+		function resolveName( name, values, suffix ) {
+			if ( typeof suffix === "undefined" ) {
+				return mout.object.get( values, name ) || "";
+			}
+			else {
+				name = name.split( "." );
+				name[0] = name[0] + suffix;
+				
+				return mout.object.get( values, name.join( "." ) ) || "";
+			}
 		}
 
 
@@ -199,6 +227,7 @@ module.exports = function( grunt ) {
 			includePath = preparePath( includePath, filePath );
 
 			var inlineValues = parseInlineValues( attributes );
+			var suffix = parseSuffix(attributes);
 
 			if ( validateIf( inlineValues, values ) ) return "";
 
@@ -229,8 +258,8 @@ module.exports = function( grunt ) {
 				return fragment;
 
 			} else {
-
-				return parse( includeContent, includePath, values );
+			
+				return parse( includeContent, includePath, values, suffix);
 
 			}
 
@@ -281,14 +310,14 @@ module.exports = function( grunt ) {
 
 		// Recursivly search for includes and create one file.
 
-		function parse( fileContent, filePath, values ) {
+		function parse( fileContent, filePath, values, suffix ) {
 
 			fileContent = fileContent.replace( regexInline, function( match, attributes, content ) {
 				return inlineReplace( attributes, content, filePath, values );
 			} );
 
 			if ( typeof options.process === "function" ) {
-				fileContent = options.process( fileContent, values );
+				fileContent = options.process( fileContent, values, suffix );
 			}
 
 			fileContent = fileContent.replace( regex, function( match, indent, includePath, attributes ) {

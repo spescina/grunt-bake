@@ -4,6 +4,10 @@
 		"info": {
 			"author": "Mathias"
 		},
+		"title_two": "Another Apple Pie",
+		"info_two": {
+			"author": "Mathias Another"
+		},
 		"bar": false,
 		"items": [
 			"foo",

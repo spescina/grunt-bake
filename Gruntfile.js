@@ -178,6 +178,17 @@ module.exports = function(grunt) {
 				files: {
 					"tmp/no_process_bake.html": "test/fixtures/no_process_bake.html"
 				}
+			},
+			
+			suffix_bake: {
+				options: {
+					content: "test/fixtures/content.json",
+					section: "en"
+				},
+
+				files: {
+					"tmp/suffix_bake.html": "test/fixtures/suffix_bake.html"
+				}
 			}
 		}
 
