@@ -127,15 +127,22 @@ module.exports = function( grunt ) {
 		// Helper method to resolve nested placeholder names like: "home.footer.text"
 
 		function resolveName( name, values, suffix ) {
-			//console.log(name, suffix);
+			
 			if ( typeof suffix === "undefined" ) {
 				return mout.object.get( values, name ) || "";
 			}
 			else {
-				name = name.split( "." );
-				name[0] = name[0] + suffix;
+				var t = name.split( "." );
+				t[0] = t[0] + suffix;
 				
-				return mout.object.get( values, name.join( "." ) ) || "";
+				var value = mout.object.get( values, t.join( "." ) );
+				
+				if ( typeof value !== "undefined" ) {
+					return value;
+				}
+				else {
+					return mout.object.get( values, name ) || "";
+				}
 			}
 		}
 
