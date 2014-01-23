@@ -8,13 +8,18 @@
 		"info_two": {
 			"author": "Mathias Another"
 		},
+		"title_three": "Another Apple",
+		"info_three": {
+			"author": "Another"
+		},
 		"bar": false,
 		"items": [
 			"foo",
 			"bar",
 			"baz",
 			"superman"
-		]
+		],
+		"s": "test string"
 	},
 
 	"de": {

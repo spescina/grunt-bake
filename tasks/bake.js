@@ -69,7 +69,7 @@ module.exports = function( grunt ) {
 		
 		// Regex to parse suffixes.
 
-		var suffixRegex = /suffix\{"([^"]+)"\}/g;
+		var suffixRegex = /suffix\{"([^"]+)"\}/;
 
 
 		// Method to check wether file exists and warn if not.
@@ -97,11 +97,11 @@ module.exports = function( grunt ) {
 
 		// Parses attribute string.
 
-		function parseInlineValues( string ) {
+		function parseInlineValues( s ) {
 			var match;
 			var values = {};
 
-			while( match = attributesRegex.exec( string ) ) {
+			while( match = attributesRegex.exec( s ) ) {
 				values[ match[ 1 ] ] = match[ 2 ];
 			}
 
@@ -110,10 +110,10 @@ module.exports = function( grunt ) {
 		
 		// Parses suffix string.
 
-		function parseSuffix( string ) {
+		function parseSuffix( s ) {
 			var match;
-
-			match = suffixRegex.exec( string );
+			
+			match = suffixRegex.exec( s );
 			
 			if (match) {
 				return match[1];
@@ -127,6 +127,7 @@ module.exports = function( grunt ) {
 		// Helper method to resolve nested placeholder names like: "home.footer.text"
 
 		function resolveName( name, values, suffix ) {
+			//console.log(name, suffix);
 			if ( typeof suffix === "undefined" ) {
 				return mout.object.get( values, name ) || "";
 			}
@@ -223,7 +224,7 @@ module.exports = function( grunt ) {
 		}
 
 		function replace( indent, includePath, attributes, filePath, values ) {
-
+			
 			includePath = preparePath( includePath, filePath );
 
 			var inlineValues = parseInlineValues( attributes );
@@ -268,7 +269,8 @@ module.exports = function( grunt ) {
 		function inlineReplace( attributes, content, filePath, values ) {
 
 			var inlineValues = parseInlineValues( attributes );
-
+			var suffix = parseSuffix(attributes);
+			
 			if ( validateIf( inlineValues, values ) ) return "";
 
 			var forEachValues = [];
@@ -298,7 +300,7 @@ module.exports = function( grunt ) {
 
 			} else {
 
-				return parse( includeContent, filePath, values );
+				return parse( includeContent, filePath, values, suffix );
 
 			}
 		}
